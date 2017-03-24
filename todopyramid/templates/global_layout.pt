@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en" metal:define-macro="layout">
+  <head>
+    <meta charset="utf-8">
+    <link rel="shortcut icon" href="${request.static_url('todopyramid:static/favicon.ico')}" />
+    <title><tal:title condition="page_title | None">${page_title} &mdash; </tal:title>ToDo Pyramid</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="The Pyramid version of the todo app">
+    <meta name="author" content="Six Feet Up, Inc.">
+
+    <!-- Le styles -->
+
+    <!-- Generated resources -->
+    <tal:resources repeat="css_path css_resources | []">
+      <link rel="stylesheet" media="screen" type="text/css"
+            tal:attributes="href python: request.static_url(css_path)" />
+    </tal:resources>
+
+    <link rel="stylesheet" type="text/css" media="screen" charset="utf-8"
+          href="${request.static_url('deform_bootstrap:static/deform_bootstrap.css')}" />
+    <link rel="stylesheet" type="text/css" media="screen" charset="utf-8"
+          href="${request.static_url('todopyramid:static/bootglyph/css/icon.css')}" />
+
+    <metal:css define-slot="css"/>
+
+    <link rel="stylesheet" type="text/css" media="screen" charset="utf-8"
+          href="${request.static_url('todopyramid:static/main.css')}" />
+
+    <!-- Le javascript, which unfortunately has to be at the top for Deform to work -->
+    <script src="${request.static_url('deform:static/scripts/jquery-1.7.2.min.js')}"></script>
+    <script src="${request.static_url('deform:static/scripts/deform.js')}"></script>
+
+    <!-- Generated Resources -->
+    <tal:resources repeat="js_path js_resources | []">
+        <script type="text/javascript"
+                tal:attributes="src request.static_url(js_path)"></script>
+    </tal:resources>
+
+    <script src="${request.static_url('deform_bootstrap:static/deform_bootstrap.js')}"></script>
+    <script src="${request.static_url('deform_bootstrap:static/bootstrap.min.js')}"></script>
+
+    <metal:js define-slot="javascript"/>
+
+  </head>
+
+  <body tal:define="section_name section | None;
+                    section_class string:section-$section_name;"
+        tal:attributes="class section_name and section_class or ''">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
+      <div class="navbar-inner">
+        <div class="container">
+          <a class="brand" href="${request.application_url}">ToDo Pyramid</a>
+          <div class="nav-collapse collapse">
+            <ul class="nav" >
+              <li tal:attributes="class section_name == 'home' and 'active' or ''"><a href="${request.application_url}">Home</a></li>
+              <li tal:attributes="class section_name == 'list' and 'active' or ''"><a href="${request.application_url}/list">List</a></li>
+              <li tal:attributes="class section_name == 'tags' and 'active' or ''"><a href="${request.application_url}/tags">Tags</a></li>
+              <li tal:attributes="class section_name == 'account' and 'active' or ''"><a href="${request.application_url}/account">My Account</a></li>
+              <li tal:attributes="class section_name == 'about' and 'active' or ''"><a href="${request.application_url}/about">About</a></li>
+            </ul>
+
+            <ul class="nav pull-right"
+                tal:condition="section_name != 'login'">
+              <li><a href="#login">${request.persona_button}</a></li>
+            </ul>
+          </div><!--/.nav-collapse -->
+        </div>
+      </div>
+    </div>
+
+    <div class="container">
+      <div id="flash-messages">
+        <!--! Flash messages -->
+        <!--! one flash message that can be used by js -->
+        <div class="alert hide">
+          <button type="button" class="close" data-dismiss="alert">&times;</button>
+        </div>
+        <!--! Standard flash messages -->
+        <tal:message condition="request.session.peek_flash()">
+            <div class="alert"
+                 tal:repeat="message request.session.pop_flash()">
+              <button type="button" class="close" data-dismiss="alert">&times;</button>
+              <tal:alert replace="structure message" />
+            </div>
+        </tal:message>
+        <!--! Flash messages from specific queues -->
+        <tal:newsflash repeat="flash_type ['success', 'info', 'error']">
+          <tal:message condition="request.session.peek_flash(flash_type)">
+              <div tal:repeat="message request.session.pop_flash(flash_type)"
+                   tal:attributes="class string:alert alert-$flash_type">
+                <button type="button" class="close" data-dismiss="alert">&times;</button>
+                <tal:alert replace="structure message" />
+              </div>
+          </tal:message>
+        </tal:newsflash>
+      </div>
+
+      <!--! Page Title -->
+      <div class="page-header" tal:condition="page_title | None">
+        <h1>${page_title} <small><metal:subtext define-slot="subtext"/></small></h1>
+      </div>
+
+      <!--! Page Content from other templates -->
+      <div id="content">
+        <metal:content define-slot="content">
+          Site content goes here
+        </metal:content>
+      </div>
+
+    </div>
+
+    <footer class="pagination-centered container">
+      <hr/>
+      <p><a href="http://www.sixfeetup.com"><img alt="Six Feet Up, Inc. logo" src="${request.static_url('todopyramid:static/sixfeetup-logo.png')}" /></a></p>
+      <p>Created by <a href="http://www.sixfeetup.com">Six Feet Up, Inc.</a> &mdash; Get the code on <a href="https://github.com/indypy/todopyramid#readme">GitHub</a></p>
+    </footer>
+
+    <!-- Persona, loading at the bottom because it takes forever -->
+    <script src="https://login.persona.org/include.js" type="text/javascript"></script>
+    <script type="text/javascript">${request.persona_js}</script>
+
+  </body>
+</html>

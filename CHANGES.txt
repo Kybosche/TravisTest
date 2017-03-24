@@ -1,0 +1,7 @@
+1.0
+---
+
+- Initial package from pcreate alchemy
+  [claytron]
+- Updated docs to reflect what is going in to the app
+  [claytron]
